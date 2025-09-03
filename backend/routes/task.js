@@ -1,0 +1,96 @@
+const express = require('express');
+const router = express.Router();
+const Task = require('../models/Task');
+const TaskAssignment = require('../models/TaskAssignment');
+const User = require('../models/User');
+const fetchuser = require('../middleware/fetchuser');
+
+// Route 1:  Create a Task (Admin only) POST /api/tasks (Admin must be authenticated; check req.user.isAdmin)
+// Create task and assign to all interns (automatic assignment)
+router.post('/', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        const { title, description } = req.body;
+        const task = await Task.create({
+            title,
+            description,
+            postedBy: req.user.id
+        });
+        // Find all interns
+        const interns = await User.find({ isAdmin: false }).select('_id');
+        // Assignments for all interns
+        const assignments = await Promise.all(interns.map(({ _id }) =>
+            TaskAssignment.create({
+                task: task._id,
+                intern: _id
+            })
+        ));
+        res.json({ success: true, task, assignments });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+//Route 2: Get All Assigned Tasks (Intern) GET /api/tasks/assigned (Intern sees only tasks assigned to them.)
+router.get('/assigned', fetchuser, async (req, res) => {
+    if (req.user.isAdmin) return res.status(403).send({ error: "Admins cannot view this" });
+    try {
+        const assignments = await TaskAssignment.find({ intern: req.user.id })
+            .populate('task');
+        res.json({ success: true, assignments });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+//Route 3: Submit Work (Intern) PUT /api/tasks/submit/:taskId
+router.put('/submit/:taskId', fetchuser, async (req, res) => {
+    try {
+        const assignment = await TaskAssignment.findOne({
+            task: req.params.taskId,
+            intern: req.user.id
+        });
+        if (!assignment) return res.status(404).send({ error: "Assignment not found" });
+        assignment.submissionLink = req.body.submissionLink;
+        assignment.status = 'submitted';
+        await assignment.save();
+        res.json({ success: true, assignment });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+//Route 4: Evaluate Task (Admin) PUT /api/tasks/evaluate/:assignmentId
+router.put('/evaluate/:assignmentId', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        const assignment = await TaskAssignment.findById(req.params.assignmentId);
+        if (!assignment) return res.status(404).send({ error: "Assignment not found" });
+        assignment.feedback = req.body.feedback;
+        assignment.stars = req.body.stars;
+        assignment.status = 'evaluated';
+        await assignment.save();
+        res.json({ success: true, assignment });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+//Route 5: Get All Submissions for a Task (Admin) GET /api/tasks/:taskId/submissions
+router.get('/:taskId/submissions', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        const submissions = await TaskAssignment.find({ task: req.params.taskId })
+            .populate('intern', 'name email');
+        res.json({ success: true, submissions });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+module.exports = router;
