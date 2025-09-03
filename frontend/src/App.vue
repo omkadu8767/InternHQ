@@ -1,60 +1,48 @@
+/* eslint-disable vue/multi-word-component-names */
+
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+    <!-- Global Navigation Bar -->
+    <Navbar/>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+    <!-- Loader Overlay (on route change or global loading) -->
+    <Loader :loading="globalLoading" />
 
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+    <!-- Main Page Content -->
     <v-main>
-      <HelloWorld/>
+      <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Loader from './components/AppLoader.vue';
+import Navbar from './components/AppNavbar.vue';
 
 export default {
-  name: 'App',
-
   components: {
-    HelloWorld,
+    Navbar,
+    Loader
   },
-
-  data: () => ({
-    //
-  }),
-};
+  data() {
+    return {
+      globalLoading: false // For global loaders as needed
+    }
+  },
+  created() {
+    // Optional: Listen to loading state using events or a global store
+    // Or use vue-router hooks for page transitions
+    this.$router.beforeEach((to, from, next) => {
+      this.globalLoading = true;
+      next();
+    });
+    this.$router.afterEach(() => {
+      this.globalLoading = false;
+    });
+  }
+}
 </script>
+
+<style>
+/* Add any global styles here */
+</style>
