@@ -1,11 +1,13 @@
 <template>
   <v-container>
-    <v-form @submit.prevent="login">
-      <v-text-field v-model="name" label="Name" required />
-      <v-text-field v-model="email" label="Email" required />
-      <v-text-field v-model="password" label="Password" type="password" required />
-      <v-btn :loading="loading" type="submit">SignUp</v-btn>
-    </v-form>
+    <v-card class="pa-4 mx-auto" max-width="400" elevation="10">
+      <v-form @submit.prevent="login">
+        <v-text-field v-model="name" label="Name" required color="accent" dark />
+        <v-text-field v-model="email" label="Email" required color="accent" dark />
+        <v-text-field v-model="password" label="Password" type="password" required color="accent" dark />
+        <v-btn :loading="loading" type="submit" color="accent" dark block>SignUp</v-btn>
+      </v-form>
+    </v-card>
   </v-container>
 </template>
 <script>

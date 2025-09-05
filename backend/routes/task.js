@@ -32,6 +32,7 @@ router.post('/', fetchuser, async (req, res) => {
     }
 });
 
+//Route 2: Get all tasks details(Admin only)
 router.get('/admin', fetchuser, async (req, res) => {
     try {
         if (!req.user.isAdmin) {
@@ -56,7 +57,7 @@ router.get('/admin', fetchuser, async (req, res) => {
     }
 });
 
-//Route 2: Get All Assigned Tasks (Intern) GET /api/tasks/assigned (Intern sees only tasks assigned to them.)
+//Route 3: Get All Assigned Tasks (Intern) GET /api/tasks/assigned (Intern sees only tasks assigned to them.)
 router.get('/assigned', fetchuser, async (req, res) => {
     if (req.user.isAdmin) return res.status(403).send({ error: "Admins cannot view this" });
     try {
@@ -69,7 +70,7 @@ router.get('/assigned', fetchuser, async (req, res) => {
     }
 });
 
-//Route 3: Submit Work (Intern) PUT /api/tasks/submit/:taskId
+//Route 4: Submit Work (Intern) PUT /api/tasks/submit/:taskId
 router.put('/submit/:taskId', fetchuser, async (req, res) => {
     try {
         const assignment = await TaskAssignment.findOne({
@@ -87,7 +88,7 @@ router.put('/submit/:taskId', fetchuser, async (req, res) => {
     }
 });
 
-//Route 4: Evaluate Task (Admin) PUT /api/tasks/evaluate/:assignmentId
+//Route 5: Evaluate Task (Admin) PUT /api/tasks/evaluate/:assignmentId
 router.put('/evaluate/:assignmentId', fetchuser, async (req, res) => {
     if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
     try {
@@ -104,7 +105,7 @@ router.put('/evaluate/:assignmentId', fetchuser, async (req, res) => {
     }
 });
 
-//Route 5: Get All Submissions for a Task (Admin) GET /api/tasks/:taskId/submissions
+//Route 6: Get All Submissions for a Task (Admin) GET /api/tasks/:taskId/submissions
 router.get('/:taskId/submissions', fetchuser, async (req, res) => {
     if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
     try {
@@ -117,6 +118,31 @@ router.get('/:taskId/submissions', fetchuser, async (req, res) => {
     }
 });
 
+// Route 7: Get all interns with their task counts (Admin only) GET /api/admin/interns
+router.get('/admin/interns', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        // Get all interns
+        const interns = await User.find({ isAdmin: false }).select('_id name email').lean();
+
+        // For each intern, count assignments by status
+        const result = await Promise.all(interns.map(async intern => {
+            const assignments = await TaskAssignment.find({ intern: intern._id }).select('status');
+            const counts = { pending: 0, submitted: 0, evaluated: 0, total: assignments.length };
+            assignments.forEach(a => {
+                if (a.status === 'pending') counts.pending++;
+                else if (a.status === 'submitted') counts.submitted++;
+                else if (a.status === 'evaluated') counts.evaluated++;
+            });
+            return { ...intern, counts };
+        }));
+
+        res.json({ interns: result });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
 
 
 module.exports = router;
