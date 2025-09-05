@@ -4,13 +4,13 @@ import DashboardAdmin from '@/components/DashboardAdmin.vue';
 import DashboardIntern from '@/components/DashboardIntern.vue';
 import InternList from '@/components/InternList.vue';
 import ProfileIntern from '@/components/ProfileIntern.vue';
-import AppHome from '@/views/AppHome.vue';
+// import AppHome from '@/views/AppHome.vue';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 const routes = [
-    { path: '/', component: AppHome },
+    { path: '/', component: Login },
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
     {
@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
         if (!token) {
             next('/login');
         } else if (to.meta.isAdmin !== undefined && to.meta.isAdmin !== isAdmin) {
-            next('/'); // redirect to home if role not matching
+            next('/login'); // redirect to home if role not matching
         } else {
             next();
         }

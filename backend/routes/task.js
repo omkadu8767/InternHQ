@@ -118,23 +118,29 @@ router.get('/:taskId/submissions', fetchuser, async (req, res) => {
     }
 });
 
-// Route 7: Get all interns with their task counts (Admin only) GET /api/admin/interns
+// Route 7: Get all interns with their task counts and average stars (Admin only)
 router.get('/admin/interns', fetchuser, async (req, res) => {
     if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
     try {
         // Get all interns
         const interns = await User.find({ isAdmin: false }).select('_id name email').lean();
 
-        // For each intern, count assignments by status
+        // For each intern, count assignments by status and calculate avgStars
         const result = await Promise.all(interns.map(async intern => {
-            const assignments = await TaskAssignment.find({ intern: intern._id }).select('status');
+            const assignments = await TaskAssignment.find({ intern: intern._id }).select('status stars');
             const counts = { pending: 0, submitted: 0, evaluated: 0, total: assignments.length };
+            let starSum = 0, starCount = 0;
             assignments.forEach(a => {
                 if (a.status === 'pending') counts.pending++;
                 else if (a.status === 'submitted') counts.submitted++;
                 else if (a.status === 'evaluated') counts.evaluated++;
+                if (typeof a.stars === 'number') {
+                    starSum += a.stars;
+                    starCount++;
+                }
             });
-            return { ...intern, counts };
+            const avgStars = starCount ? (starSum / starCount) : null;
+            return { ...intern, counts, avgStars, starCount };
         }));
 
         res.json({ interns: result });
@@ -144,5 +150,36 @@ router.get('/admin/interns', fetchuser, async (req, res) => {
     }
 });
 
+// Route 8 : Get average stars for logged-in intern
+router.get('/performance', fetchuser, async (req, res) => {
+    if (req.user.isAdmin) return res.status(403).send({ error: "Admins cannot view this" });
+    try {
+        const assignments = await TaskAssignment.find({ intern: req.user.id, stars: { $exists: true, $ne: null } });
+        if (!assignments.length) return res.json({ avgStars: null, count: 0 });
+        const totalStars = assignments.reduce((sum, a) => sum + (a.stars || 0), 0);
+        const avgStars = totalStars / assignments.length;
+        res.json({ avgStars, count: assignments.length });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
+
+// Route 9: Delete a Task (Admin only) DELETE /api/tasks/:taskId
+router.delete('/:taskId', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        const task = await Task.findById(req.params.taskId);
+        if (!task) return res.status(404).send({ error: "Task not found" });
+        // Delete all assignments for this task
+        await TaskAssignment.deleteMany({ task: req.params.taskId });
+        // Delete the task itself
+        await Task.findByIdAndDelete(req.params.taskId);
+        res.json({ success: true, message: "Task and its assignments deleted" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
+    }
+});
 
 module.exports = router;

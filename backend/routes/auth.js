@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const TaskAssignment = require('../models/TaskAssignment')
 const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
@@ -83,6 +84,21 @@ router.get('/getuser', fetchuser, async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal server error");
+    }
+});
+
+// Route 3: Delete an intern (Admin only)
+router.delete('/admin/interns/:internId', fetchuser, async (req, res) => {
+    if (!req.user.isAdmin) return res.status(403).send({ error: "Access denied" });
+    try {
+        // Delete the user
+        await User.findByIdAndDelete(req.params.internId);
+        // Optionally, delete all their assignments
+        await TaskAssignment.deleteMany({ intern: req.params.internId });
+        res.json({ success: true, message: "User deleted" });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Internal server error');
     }
 });
 

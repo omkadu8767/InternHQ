@@ -84,9 +84,20 @@
             boxShadow: '0 4px 24px 0 rgba(63,81,181,0.15)',
           }"
         >
-          <v-card-title class="headline font-weight-bold" style="letter-spacing: 1px">
+          <v-card-title
+            class="headline font-weight-bold d-flex align-center"
+            style="letter-spacing: 1px"
+          >
             <v-icon color="accent" left>mdi-clipboard-text</v-icon>
-            {{ task.title }}
+            <span style="flex: 1">{{ task.title }}</span>
+            <v-btn
+              icon
+              color="error"
+              @click="deleteTask(task._id)"
+              style="margin-left: 8px"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
           </v-card-title>
           <v-card-text>
             <div class="mb-2"><strong>Description:</strong> {{ task.description }}</div>
@@ -182,6 +193,23 @@ export default {
       }
       // Always briefly show polling loader
       this.loading = false;
+    },
+    async deleteTask(taskId) {
+      if (!confirm("Are you sure you want to delete this task?")) return;
+      try {
+        await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+          headers: { "auth-token": localStorage.getItem("auth-token") },
+        });
+        this.tasks = this.tasks.filter((t) => t._id !== taskId);
+        this.$toast && this.$toast.success
+          ? this.$toast.success("Task deleted!")
+          : alert("Task deleted!");
+      } catch (err) {
+        this.$toast && this.$toast.error
+          ? this.$toast.error("Failed to delete task.")
+          : alert("Failed to delete task.");
+        console.error("Delete error:", err.response ? err.response.data : err);
+      }
     },
     refreshTasks() {
       this.fetchTasks();
