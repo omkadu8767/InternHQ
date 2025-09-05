@@ -32,6 +32,30 @@ router.post('/', fetchuser, async (req, res) => {
     }
 });
 
+router.get('/admin', fetchuser, async (req, res) => {
+    try {
+        if (!req.user.isAdmin) {
+            return res.status(403).json({ error: "Access denied" });
+        }
+
+        const tasks = await Task.find({ postedBy: req.user.id }).lean();
+
+        const tasksWithAssignments = await Promise.all(
+            tasks.map(async task => {
+                const assignments = await TaskAssignment.find({ task: task._id })
+                    .populate('intern', 'name email')
+                    .lean();
+                return { ...task, assignments };
+            })
+        );
+
+        res.json({ tasks: tasksWithAssignments });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+});
+
 //Route 2: Get All Assigned Tasks (Intern) GET /api/tasks/assigned (Intern sees only tasks assigned to them.)
 router.get('/assigned', fetchuser, async (req, res) => {
     if (req.user.isAdmin) return res.status(403).send({ error: "Admins cannot view this" });
@@ -92,5 +116,7 @@ router.get('/:taskId/submissions', fetchuser, async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
+
 
 module.exports = router;
