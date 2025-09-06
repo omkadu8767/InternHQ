@@ -1,6 +1,22 @@
 <template>
   <v-app-bar app color="primary" dark>
-    <v-toolbar-title>Internify</v-toolbar-title>
+    <v-toolbar-title class="d-flex align-center" style="gap: 10px">
+      <img
+        src="../assets/logo2.png"
+        alt="InternHQ Logo"
+        height="36"
+        style="margin-right: 8px; vertical-align: middle"
+      />
+      <span style="font-size: 1.7rem; font-weight: 700; letter-spacing: 1px; color: #fff">
+        <span
+          style="color: #00b8d4; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
+          >Intern</span
+        ><span
+          style="color: #26a69a; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
+          >HQ</span
+        >
+      </span>
+    </v-toolbar-title>
     <v-spacer></v-spacer>
     <template v-if="$vuetify.breakpoint.mdAndUp">
       <v-btn v-if="isAuthenticated && !isAdmin" to="/intern">Home</v-btn>
