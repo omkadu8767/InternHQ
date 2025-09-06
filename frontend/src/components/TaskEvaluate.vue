@@ -1,8 +1,16 @@
 <template>
   <v-form @submit.prevent="submitEvaluation">
-    <v-text-field v-model="feedback" label="Feedback" required dense />
-    <v-rating v-model="stars" length="5" color="amber" background-color="grey" dense />
-    <v-btn :loading="loading" color="accent" type="submit" small> Submit Feedback </v-btn>
+    <v-text-field v-model="feedback" label="Feedback" required dense color="primary" />
+    <v-rating
+      v-model="stars"
+      length="5"
+      color="amber"
+      background-color="grey lighten-2"
+      dense
+    />
+    <v-btn :loading="loading" color="primary" type="submit" small>
+      Submit Feedback
+    </v-btn>
   </v-form>
 </template>
 

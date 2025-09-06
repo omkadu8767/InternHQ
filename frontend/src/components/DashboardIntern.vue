@@ -16,25 +16,28 @@
     <v-row align="center" class="mb-6">
       <v-col cols="12">
         <v-card
-          color="primary"
-          dark
-          class="pa-4 d-flex align-center flex-wrap rounded-xl elevation-12"
+          class="pa-4 d-flex align-center flex-wrap rounded-xl elevation-4"
+          :style="{
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)',
+            color: '#1E88E5',
+          }"
         >
           <v-icon
             :large="$vuetify.breakpoint.mdAndUp"
             :small="!$vuetify.breakpoint.mdAndUp"
             left
-            color="accent"
+            color="primary"
           >
             mdi-account-circle
           </v-icon>
 
           <span
-            class="font-weight-bold white--text"
+            class="font-weight-bold"
             :class="{
               'text-h5': !$vuetify.breakpoint.mdAndUp,
               'text-h4': $vuetify.breakpoint.mdAndUp,
             }"
+            style="color: #1e88e5"
           >
             Intern Portal
           </span>
@@ -42,7 +45,7 @@
           <v-spacer v-if="$vuetify.breakpoint.mdAndUp"></v-spacer>
 
           <div class="d-flex justify-end">
-            <v-chip color="accent" outlined class="font-weight-bold">
+            <v-chip color="primary" outlined class="font-weight-bold">
               My Assignments
             </v-chip>
           </div>
@@ -65,9 +68,9 @@
           v-for="assignment in assignedAssignments"
           :key="assignment._id"
         >
-          <v-card class="mb-4 rounded-xl elevation-12" color="indigo darken-2" dark>
-            <v-card-title class="headline font-weight-bold">
-              <v-icon color="accent" left>mdi-clipboard-text</v-icon>
+          <v-card class="mb-4 rounded-xl elevation-2" color="#e3f2fd">
+            <v-card-title class="headline font-weight-bold" style="color: #1e88e5">
+              <v-icon color="primary" left>mdi-clipboard-text</v-icon>
               {{ assignment.task.title }}
             </v-card-title>
             <v-card-text>
@@ -91,9 +94,9 @@
           v-for="assignment in submittedAssignments"
           :key="assignment._id"
         >
-          <v-card class="mb-4 rounded-xl elevation-12" color="indigo darken-3" dark>
-            <v-card-title class="headline font-weight-bold">
-              <v-icon color="accent" left>mdi-clipboard-text</v-icon>
+          <v-card class="mb-4 rounded-xl elevation-2" color="#bbdefb">
+            <v-card-title class="headline font-weight-bold" style="color: #1976d2">
+              <v-icon color="primary" left>mdi-clipboard-text</v-icon>
               {{ assignment.task.title }}
             </v-card-title>
             <v-card-text>
@@ -102,11 +105,15 @@
               </div>
               <div class="mb-2">
                 <strong>Status:</strong>
-                <v-chip color="blue" small dark>Submitted</v-chip>
+                <v-chip color="blue lighten-2" small>Submitted</v-chip>
               </div>
               <div class="mb-2">
                 <strong>Submission Link:</strong>
-                <a :href="assignment.submissionLink" target="_blank" class="accent--text">
+                <a
+                  :href="assignment.submissionLink"
+                  target="_blank"
+                  style="color: #1e88e5"
+                >
                   {{ assignment.submissionLink }}
                 </a>
               </div>
@@ -127,25 +134,25 @@
           v-for="assignment in evaluatedAssignments"
           :key="assignment._id"
         >
-          <v-card class="mb-4 rounded-xl elevation-12" color="primary" dark>
-            <v-card-title class="headline font-weight-bold white--text">
-              <v-icon color="accent" left>mdi-clipboard-text</v-icon>
+          <v-card class="mb-4 rounded-xl elevation-2" color="#c8e6c9">
+            <v-card-title class="headline font-weight-bold" style="color: #388e3c">
+              <v-icon color="primary" left>mdi-clipboard-text</v-icon>
               {{ assignment.task.title }}
             </v-card-title>
-            <v-card-text class="white--text">
+            <v-card-text>
               <div class="mb-2">
                 <strong>Description:</strong> {{ assignment.task.description }}
               </div>
               <div class="mb-2">
                 <strong>Status:</strong>
-                <v-chip color="green" small dark>Evaluated</v-chip>
+                <v-chip color="green lighten-1" small>Evaluated</v-chip>
               </div>
               <div class="mb-2">
                 <strong>Submission Link:</strong>
                 <a
                   :href="assignment.submissionLink"
                   target="_blank"
-                  class="accent--text white--text"
+                  style="color: #1e88e5"
                 >
                   {{ assignment.submissionLink }}
                 </a>
@@ -194,7 +201,6 @@ export default {
   },
   methods: {
     async fetchAssignments() {
-      // Only show loader if no assignments yet (initial load)
       if (this.allAssignments.length === 0) this.loading = true;
       else this.loading = false;
       try {
@@ -205,7 +211,6 @@ export default {
       } catch (error) {
         console.error(error);
       }
-      // Always briefly show polling loader
       this.loading = false;
     },
     refreshAssignments() {
@@ -214,13 +219,11 @@ export default {
   },
   mounted() {
     this.fetchAssignments();
-    // Start polling every 5 seconds
     this.pollIntervalId = setInterval(() => {
       this.fetchAssignments();
     }, 5000);
   },
   beforeDestroy() {
-    // Clean up polling interval
     if (this.pollIntervalId) {
       clearInterval(this.pollIntervalId);
       this.pollIntervalId = null;

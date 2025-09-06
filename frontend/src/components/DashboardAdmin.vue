@@ -7,17 +7,17 @@
     <v-row align="center" class="mb-4">
       <v-col cols="12">
         <v-card
-          class="pa-4 d-flex align-center flex-wrap rounded-xl elevation-8"
+          class="pa-4 d-flex align-center flex-wrap rounded-xl elevation-4"
           :style="{
-            background: 'linear-gradient(135deg, #1E88E5 0%, #1F1F1F 100%)',
-            color: '#fff',
+            background: 'linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%)',
+            color: '#1E88E5',
           }"
         >
           <v-icon
             :large="$vuetify.breakpoint.mdAndUp"
             :small="!$vuetify.breakpoint.mdAndUp"
             left
-            color="accent"
+            color="primary"
           >
             mdi-account-cog
           </v-icon>
@@ -44,7 +44,7 @@
               justifyContent: $vuetify.breakpoint.mdAndUp ? 'flex-end' : 'center',
             }"
           >
-            <v-chip color="accent" class="font-weight-bold" outlined>
+            <v-chip color="primary" class="font-weight-bold" outlined>
               Task Management
             </v-chip>
           </div>
@@ -53,7 +53,7 @@
           <v-progress-linear
             v-if="loading && tasks.length > 0"
             indeterminate
-            color="accent"
+            color="primary"
             height="3"
             style="position: absolute; left: 0; right: 0; bottom: 0"
           />
@@ -65,8 +65,7 @@
     <v-btn
       color="primary"
       class="mb-4"
-      dark
-      elevation="4"
+      elevation="2"
       rounded
       @click="showTaskForm = true"
     >
@@ -90,16 +89,16 @@
     <v-row>
       <v-col cols="12" md="6" v-for="task in tasks" :key="task._id">
         <v-card
-          class="mb-4 rounded-xl elevation-6"
+          class="mb-4 rounded-xl elevation-2"
           :style="{
-            background: '#212121',
-            color: '#fff',
-            borderLeft: '6px solid #00E5FF',
+            background: '#f5f5f5',
+            color: '#1E1E1E',
+            borderLeft: '6px solid #1E88E5',
           }"
         >
           <!-- Task Header -->
           <v-card-title class="headline font-weight-bold d-flex align-center">
-            <v-icon color="accent" left>mdi-clipboard-text</v-icon>
+            <v-icon color="primary" left>mdi-clipboard-text</v-icon>
             <span class="flex-grow-1">{{ task.title }}</span>
             <v-btn icon color="error" @click="deleteTask(task._id)">
               <v-icon>mdi-delete</v-icon>
@@ -116,17 +115,17 @@
 
             <!-- Assignments -->
             <div class="mb-1"><strong>Assignments:</strong></div>
-            <v-divider class="my-2" color="grey darken-2"></v-divider>
+            <v-divider class="my-2" color="grey lighten-2"></v-divider>
 
             <div v-if="task.assignments && task.assignments.length">
               <v-card
                 v-for="assign in task.assignments"
                 :key="assign._id"
-                class="mb-2 pa-3 rounded-lg elevation-2"
+                class="mb-2 pa-3 rounded-lg elevation-1"
                 :style="{
-                  background: '#2A2A2A',
-                  borderLeft: '4px solid #1E88E5',
-                  color: '#E0E0E0',
+                  background: '#ffffff',
+                  borderLeft: '4px solid #90caf9',
+                  color: '#333',
                 }"
                 outlined
               >
@@ -148,7 +147,7 @@
                     :href="assign.submissionLink"
                     target="_blank"
                     class="text-decoration-none"
-                    style="color: #00e5ff"
+                    style="color: #1e88e5"
                   >
                     {{ assign.submissionLink }}
                   </a>
@@ -193,7 +192,6 @@ export default {
   },
   methods: {
     async fetchTasks() {
-      // Only show loader if no tasks yet (initial load)
       if (this.tasks.length === 0) this.loading = true;
       else this.loading = false;
       try {
@@ -204,7 +202,6 @@ export default {
       } catch (error) {
         console.error(error);
       }
-      // Always briefly show polling loader
       this.loading = false;
     },
     async deleteTask(taskId) {
@@ -229,21 +226,19 @@ export default {
       this.showTaskForm = false;
     },
     statusColor(status) {
-      if (status === "pending") return "grey";
-      if (status === "submitted") return "blue";
-      if (status === "evaluated") return "green";
-      return "grey";
+      if (status === "pending") return "grey lighten-1";
+      if (status === "submitted") return "blue lighten-2";
+      if (status === "evaluated") return "green lighten-1";
+      return "grey lighten-1";
     },
   },
   mounted() {
     this.fetchTasks();
-    // Start polling every 5 seconds
     this.pollIntervalId = setInterval(() => {
       this.fetchTasks();
     }, 5000);
   },
   beforeDestroy() {
-    // Clean up polling interval
     if (this.pollIntervalId) {
       clearInterval(this.pollIntervalId);
       this.pollIntervalId = null;

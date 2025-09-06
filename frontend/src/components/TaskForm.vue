@@ -1,14 +1,17 @@
 <template>
   <v-dialog v-model="dialog" max-width="500" persistent>
-    <v-card color="surface" class="rounded-xl elevation-8">
+    <v-card color="white" class="rounded-xl elevation-4">
       <!-- Header -->
       <v-card-title class="d-flex align-center">
         <v-icon left color="primary">mdi-clipboard-plus</v-icon>
-        <span class="font-weight-bold" style="font-size: 1.3rem; letter-spacing: 0.5px">
+        <span
+          class="font-weight-bold"
+          style="font-size: 1.3rem; letter-spacing: 0.5px; color: #1e88e5"
+        >
           Create New Task
         </span>
       </v-card-title>
-      <v-divider class="mx-4 mb-2" color="accent"></v-divider>
+      <v-divider class="mx-4 mb-2" color="primary"></v-divider>
 
       <!-- Form -->
       <v-card-text>
@@ -19,7 +22,7 @@
             outlined
             rounded
             dense
-            color="accent"
+            color="primary"
             :rules="[(v) => !!v || 'Title is required']"
             required
           />
@@ -30,7 +33,7 @@
             rounded
             rows="3"
             auto-grow
-            color="accent"
+            color="primary"
             :rules="[(v) => !!v || 'Description is required']"
             required
           />
@@ -39,7 +42,7 @@
 
       <!-- Actions -->
       <v-card-actions class="px-4 pb-4">
-        <v-btn text color="grey lighten-1" @click="cancel">Cancel</v-btn>
+        <v-btn text color="grey" @click="cancel">Cancel</v-btn>
         <v-spacer></v-spacer>
         <v-btn
           color="primary"
@@ -47,7 +50,7 @@
           @click="createTask"
           :disabled="!valid"
           rounded
-          elevation="2"
+          elevation="1"
         >
           <v-icon left>mdi-check-circle</v-icon>
           Create

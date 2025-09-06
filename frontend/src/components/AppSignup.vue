@@ -2,12 +2,10 @@
   <v-container fill-height>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
-        <v-card class="pa-6 elevation-10 rounded-xl" color="surface">
+        <v-card class="pa-6 elevation-4 rounded-xl" color="white">
           <div class="text-center mb-4">
-            <v-icon size="48" color="accent">mdi-account-plus</v-icon>
-            <h2 class="mt-2 font-weight-bold" style="color: var(--v-accent-base)">
-              Create Account
-            </h2>
+            <v-icon size="48" color="primary">mdi-account-plus</v-icon>
+            <h2 class="mt-2 font-weight-bold" style="color: #1e88e5">Create Account</h2>
             <p class="grey--text">Sign up to get started</p>
           </div>
 
@@ -19,7 +17,7 @@
               outlined
               rounded
               dense
-              color="accent"
+              color="primary"
             />
             <v-text-field
               v-model="email"
@@ -29,7 +27,7 @@
               outlined
               rounded
               dense
-              color="accent"
+              color="primary"
             />
             <v-text-field
               v-model="password"
@@ -39,12 +37,12 @@
               outlined
               rounded
               dense
-              color="accent"
+              color="primary"
             />
             <v-btn
               :loading="loading"
               type="submit"
-              color="accent"
+              color="primary"
               block
               large
               rounded
@@ -67,7 +65,7 @@ export default {
     return { name: "", email: "", password: "", loading: false };
   },
   methods: {
-    async login() {
+    async signup() {
       this.loading = true;
       try {
         const res = await axios.post("http://localhost:5000/api/auth/createuser", {
@@ -76,7 +74,7 @@ export default {
           password: this.password,
         });
         localStorage.setItem("auth-token", res.data.authToken);
-        localStorage.setItem("isAdmin", res.data.isAdmin); // for role-based views
+        localStorage.setItem("isAdmin", res.data.isAdmin);
         this.$toast.success("SignUp successful!");
         this.$router.push(res.data.isAdmin ? "/admin" : "/intern");
       } catch (err) {

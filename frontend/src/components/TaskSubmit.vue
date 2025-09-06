@@ -5,8 +5,9 @@
       label="GitHub Link"
       :disabled="loading"
       required
+      color="primary"
     />
-    <v-btn :loading="loading" type="submit" color="accent" small> Submit </v-btn>
+    <v-btn :loading="loading" type="submit" color="primary" small> Submit </v-btn>
   </v-form>
 </template>
 

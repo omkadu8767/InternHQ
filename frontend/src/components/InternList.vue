@@ -3,20 +3,22 @@
     <!-- Header -->
     <v-row align="center" class="mb-6">
       <v-col cols="12">
-        <v-card color="surface" class="pa-4 d-flex align-center elevation-6 rounded-xl">
+        <v-card color="white" class="pa-4 d-flex align-center elevation-2 rounded-xl">
           <v-icon large left color="primary">mdi-account-group</v-icon>
           <span
             style="
               font-size: 1.8rem;
               font-weight: 700;
               letter-spacing: 0.5px;
-              color: var(--v-primary-base);
+              color: #1e88e5;
             "
           >
             Interns Overview
           </span>
           <v-spacer></v-spacer>
-          <v-chip color="accent" class="font-weight-bold" outlined> Task Summary </v-chip>
+          <v-chip color="primary" class="font-weight-bold" outlined>
+            Task Summary
+          </v-chip>
         </v-card>
       </v-col>
     </v-row>
@@ -27,13 +29,13 @@
         <v-hover v-slot="{ hover }">
           <v-card
             class="mb-4 rounded-xl transition-ease-in-out"
-            :elevation="hover ? 10 : 4"
-            color="background"
-            style="border: 2px solid white"
+            :elevation="hover ? 8 : 2"
+            color="white"
+            style="border: 2px solid #e3f2fd"
           >
             <v-card-title
               class="d-flex align-center"
-              style="padding-bottom: 0; font-weight: 600; border: 2px solid white"
+              style="padding-bottom: 0; font-weight: 600"
             >
               <v-icon left color="primary">mdi-account</v-icon>
               <span style="font-size: 1.1rem">{{ intern.name }}</span>
@@ -46,20 +48,18 @@
               </v-btn>
             </v-card-title>
 
-            <v-card-text
-              style="padding-top: 8px; padding-bottom: 12px; border: 2px solid white"
-            >
+            <v-card-text style="padding-top: 8px; padding-bottom: 12px">
               <div class="d-flex flex-wrap">
-                <v-chip color="grey" outlined class="ma-1" small label>
+                <v-chip color="grey lighten-1" outlined class="ma-1" small label>
                   Pending: {{ intern.counts.pending }}
                 </v-chip>
-                <v-chip color="accent" outlined class="ma-1" small label>
+                <v-chip color="primary" outlined class="ma-1" small label>
                   Submitted: {{ intern.counts.submitted }}
                 </v-chip>
                 <v-chip color="success" outlined class="ma-1" small label>
                   Evaluated: {{ intern.counts.evaluated }}
                 </v-chip>
-                <v-chip color="primary" outlined class="ma-1" small label>
+                <v-chip color="info" outlined class="ma-1" small label>
                   Total: {{ intern.counts.total }}
                 </v-chip>
               </div>
@@ -108,7 +108,6 @@ export default {
         const res = await axios.get("http://localhost:5000/api/tasks/admin/interns", {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
-        // Each intern should have: { _id, name, email, counts: { pending, submitted, evaluated, total } }
         this.interns = res.data.interns || [];
       } catch (error) {
         console.error(error);

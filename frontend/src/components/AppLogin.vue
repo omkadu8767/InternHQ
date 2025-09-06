@@ -2,12 +2,10 @@
   <v-container fill-height>
     <v-row align="center" justify="center">
       <v-col cols="12" sm="8" md="4">
-        <v-card class="pa-6 elevation-10 rounded-xl" color="surface">
+        <v-card class="pa-6 elevation-4 rounded-xl" color="white">
           <div class="text-center mb-4">
             <v-icon size="48" color="primary">mdi-lock</v-icon>
-            <h2 class="mt-2 font-weight-bold" style="color: var(--v-primary-base)">
-              Welcome Back
-            </h2>
+            <h2 class="mt-2 font-weight-bold" style="color: #1e88e5">Welcome Back</h2>
             <p class="grey--text">Login to your account</p>
           </div>
 
@@ -20,7 +18,7 @@
               outlined
               rounded
               dense
-              color="accent"
+              color="primary"
             />
             <v-text-field
               v-model="password"
@@ -30,7 +28,7 @@
               outlined
               rounded
               dense
-              color="accent"
+              color="primary"
             />
             <v-btn
               :loading="loading"
@@ -66,7 +64,7 @@ export default {
           password: this.password,
         });
         localStorage.setItem("auth-token", res.data.authToken);
-        localStorage.setItem("isAdmin", res.data.isAdmin); // for role-based views
+        localStorage.setItem("isAdmin", res.data.isAdmin);
         this.$router.push(res.data.isAdmin ? "/admin" : "/intern");
         this.$toast.success("Login successful!");
       } catch (err) {

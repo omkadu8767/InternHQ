@@ -10,18 +10,18 @@ import { auth } from './store/auth';
 Vue.use(Vuetify);
 const vuetify = new Vuetify({
   theme: {
-    dark: true,
+    dark: false,
     themes: {
-      dark: {
+      light: {
         primary: '#1E88E5', // Bright Blue → primary brand
         accent: '#00E5FF', // Neon Cyan → glowing accents
-        secondary: '#121212', // True Black → app background
+        secondary: '#f5f5f5', // Light gray background
         info: '#29B6F6', // Sky Blue
         warning: '#FFCA28', // Amber
         error: '#EF5350', // Red
         success: '#66BB6A', // Green
-        background: '#0D1117', // Deep dark gray background
-        surface: '#1F1F1F', // Dark card surface
+        background: '#ffffff', // White background
+        surface: '#f5f5f5', // Light card surface
 
 
       }

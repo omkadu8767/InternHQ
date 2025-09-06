@@ -2,16 +2,18 @@
   <v-container>
     <v-row align="center" justify="center">
       <v-col cols="12" md="6">
-        <v-card class="pa-4 elevation-6 rounded-xl" color="surface">
+        <v-card class="pa-4 elevation-2 rounded-xl" color="white">
           <!-- User Info -->
           <v-row align="center">
             <v-col cols="4" class="text-center">
-              <v-avatar size="80" class="elevation-2">
+              <v-avatar size="80" class="elevation-1">
                 <v-icon large color="primary">mdi-account-circle</v-icon>
               </v-avatar>
             </v-col>
             <v-col cols="8">
-              <div class="text-h6 font-weight-bold">{{ user.name }}</div>
+              <div class="text-h6 font-weight-bold" style="color: #1e88e5">
+                {{ user.name }}
+              </div>
               <div class="text-body-2 grey--text">{{ user.email }}</div>
             </v-col>
           </v-row>
@@ -20,16 +22,16 @@
 
           <!-- Task Chips -->
           <div class="d-flex flex-wrap">
-            <v-chip color="warning" class="ma-1" small outlined>
+            <v-chip color="grey lighten-1" class="ma-1" small outlined>
               Pending: {{ taskCounts.pending }}
             </v-chip>
-            <v-chip color="accent" class="ma-1" small outlined>
+            <v-chip color="primary" class="ma-1" small outlined>
               Submitted: {{ taskCounts.submitted }}
             </v-chip>
             <v-chip color="success" class="ma-1" small outlined>
               Evaluated: {{ taskCounts.evaluated }}
             </v-chip>
-            <v-chip color="primary" class="ma-1" small outlined>
+            <v-chip color="info" class="ma-1" small outlined>
               Total: {{ taskCounts.total }}
             </v-chip>
           </div>
