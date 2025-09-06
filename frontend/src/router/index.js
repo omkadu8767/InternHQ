@@ -3,6 +3,7 @@ import Signup from '@/components/AppSignup.vue';
 import DashboardAdmin from '@/components/DashboardAdmin.vue';
 import DashboardIntern from '@/components/DashboardIntern.vue';
 import InternList from '@/components/InternList.vue';
+import LeaderboardIntern from '@/components/LeaderboardIntern.vue';
 import ProfileIntern from '@/components/ProfileIntern.vue';
 // import AppHome from '@/views/AppHome.vue';
 import Vue from 'vue';
@@ -31,6 +32,11 @@ const routes = [
     {
         path: '/profile',
         component: ProfileIntern,
+        meta: { requiresAuth: true, isAdmin: false }
+    },
+    {
+        path: '/leaderboard',
+        component: LeaderboardIntern,
         meta: { requiresAuth: true, isAdmin: false }
     }
 ];

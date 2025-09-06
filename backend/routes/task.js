@@ -182,4 +182,36 @@ router.delete('/:taskId', fetchuser, async (req, res) => {
     }
 });
 
+router.get('/leaderboard', async (req, res) => {
+    try {
+        // Only include evaluated assignments
+        const leaderboard = await TaskAssignment.aggregate([
+            { $match: { status: 'evaluated', stars: { $exists: true } } },
+            {
+                $group: {
+                    _id: '$intern',
+                    avgStars: { $avg: '$stars' },
+                    tasksCompleted: { $sum: 1 }
+                }
+            },
+            { $sort: { avgStars: -1, tasksCompleted: -1 } }, // Sort by stars, then tasks
+            { $limit: 10 }
+        ]);
+
+        // Populate intern details
+        const internIds = leaderboard.map(l => l._id);
+        const interns = await User.find({ _id: { $in: internIds } }).select('name email');
+
+        // Combine leaderboard and intern details
+        const merged = leaderboard.map(l => ({
+            ...l,
+            intern: interns.find(u => u._id.equals(l._id))
+        }));
+
+        res.json({ leaderboard: merged });
+    } catch (error) {
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router;
