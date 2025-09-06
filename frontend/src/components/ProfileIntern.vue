@@ -2,44 +2,57 @@
   <v-container>
     <v-row align="center" justify="center">
       <v-col cols="12" md="6">
-        <v-card class="pa-4 elevation-10 rounded-lg" color="secondary" dark>
+        <v-card class="pa-4 elevation-6 rounded-xl" color="surface">
+          <!-- User Info -->
           <v-row align="center">
             <v-col cols="4" class="text-center">
-              <v-avatar size="80">
-                <v-icon large color="accent">mdi-account-circle</v-icon>
+              <v-avatar size="80" class="elevation-2">
+                <v-icon large color="primary">mdi-account-circle</v-icon>
               </v-avatar>
             </v-col>
             <v-col cols="8">
-              <div style="font-size: 1.5rem; font-weight: 600">{{ user.name }}</div>
-              <div class="grey--text">{{ user.email }}</div>
+              <div class="text-h6 font-weight-bold">{{ user.name }}</div>
+              <div class="text-body-2 grey--text">{{ user.email }}</div>
             </v-col>
           </v-row>
+
           <v-divider class="my-4"></v-divider>
-          <div>
-            <v-chip color="grey" class="ma-1" small dark>
+
+          <!-- Task Chips -->
+          <div class="d-flex flex-wrap">
+            <v-chip color="warning" class="ma-1" small outlined>
               Pending: {{ taskCounts.pending }}
             </v-chip>
-            <v-chip color="accent" class="ma-1" small dark>
+            <v-chip color="accent" class="ma-1" small outlined>
               Submitted: {{ taskCounts.submitted }}
             </v-chip>
-            <v-chip color="success" class="ma-1" small dark>
+            <v-chip color="success" class="ma-1" small outlined>
               Evaluated: {{ taskCounts.evaluated }}
             </v-chip>
-            <v-chip color="primary" class="ma-1" small dark>
+            <v-chip color="primary" class="ma-1" small outlined>
               Total: {{ taskCounts.total }}
             </v-chip>
-            <v-divider class="my-4"></v-divider>
-            <div v-if="performance.count">
-              <span style="font-weight: 600">Performance:</span>
-              <v-rating :value="performance.avgStars" color="amber" dense readonly />
-              <span class="grey--text ml-2"
-                >({{ performance.avgStars.toFixed(2) }} / 5 from
-                {{ performance.count }} tasks)</span
-              >
-            </div>
-            <div v-else>
-              <span class="grey--text">No tasks evaluated yet.</span>
-            </div>
+          </div>
+
+          <v-divider class="my-4"></v-divider>
+
+          <!-- Performance -->
+          <div v-if="performance.count">
+            <span class="font-weight-medium">Performance:</span>
+            <v-rating
+              :value="performance.avgStars"
+              color="amber"
+              background-color="grey lighten-2"
+              dense
+              readonly
+            />
+            <span class="text-body-2 grey--text ml-2">
+              ({{ performance.avgStars.toFixed(2) }} / 5 from
+              {{ performance.count }} tasks)
+            </span>
+          </div>
+          <div v-else>
+            <span class="grey--text">No tasks evaluated yet.</span>
           </div>
         </v-card>
       </v-col>

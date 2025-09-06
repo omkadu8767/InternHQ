@@ -1,69 +1,90 @@
 <template>
   <v-container>
-    <v-row align="center" class="mb-4">
+    <!-- Header -->
+    <v-row align="center" class="mb-6">
       <v-col cols="12">
-        <v-card
-          color="primary"
-          dark
-          class="pa-4 d-flex align-center elevation-10 rounded-lg"
-          style="border-radius: 16px"
-        >
-          <v-icon large left color="accent">mdi-account-group</v-icon>
-          <span style="font-size: 2rem; font-weight: 600; letter-spacing: 1px">
+        <v-card color="surface" class="pa-4 d-flex align-center elevation-6 rounded-xl">
+          <v-icon large left color="primary">mdi-account-group</v-icon>
+          <span
+            style="
+              font-size: 1.8rem;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+              color: var(--v-primary-base);
+            "
+          >
             Interns Overview
           </span>
           <v-spacer></v-spacer>
-          <v-chip color="accent" class="font-weight-bold" outlined dark>
-            Task Summary
-          </v-chip>
+          <v-chip color="accent" class="font-weight-bold" outlined> Task Summary </v-chip>
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Intern Cards -->
     <v-row>
       <v-col cols="12" md="6" v-for="intern in interns" :key="intern._id">
-        <v-card class="mb-4 elevation-8 rounded-lg" color="secondary" dark>
-          <v-card-title class="d-flex align-center" style="padding-bottom: 0">
-            <v-icon left color="accent">mdi-account</v-icon>
-            <span style="font-weight: 600; font-size: 1.1rem">{{ intern.name }}</span>
-            <span class="grey--text ml-2" style="font-size: 0.95rem"
-              >({{ intern.email }})</span
+        <v-hover v-slot="{ hover }">
+          <v-card
+            class="mb-4 rounded-xl transition-ease-in-out"
+            :elevation="hover ? 10 : 4"
+            color="background"
+            style="border: 2px solid white"
+          >
+            <v-card-title
+              class="d-flex align-center"
+              style="padding-bottom: 0; font-weight: 600; border: 2px solid white"
             >
-            <v-spacer></v-spacer>
-            <v-btn
-              icon
-              color="error"
-              @click="deleteIntern(intern._id)"
-              style="margin-left: 8px"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-card-title>
-          <v-card-text style="padding-top: 8px; padding-bottom: 12px">
-            <v-chip color="grey" class="ma-1" small dark>
-              Pending: {{ intern.counts.pending }}
-            </v-chip>
-            <v-chip color="accent" class="ma-1" small dark>
-              Submitted: {{ intern.counts.submitted }}
-            </v-chip>
-            <v-chip color="success" class="ma-1" small dark>
-              Evaluated: {{ intern.counts.evaluated }}
-            </v-chip>
-            <v-chip color="primary" class="ma-1" small dark>
-              Total: {{ intern.counts.total }}
-            </v-chip>
-            <v-divider class="my-3"></v-divider>
-            <div v-if="intern.starCount">
-              <span style="font-weight: 600">Performance:</span>
-              <v-rating :value="intern.avgStars" color="amber" dense readonly />
-              <span class="grey--text ml-2">
-                ({{ intern.avgStars.toFixed(2) }} / 5 from {{ intern.starCount }} tasks)
+              <v-icon left color="primary">mdi-account</v-icon>
+              <span style="font-size: 1.1rem">{{ intern.name }}</span>
+              <span class="grey--text ml-2" style="font-size: 0.95rem">
+                ({{ intern.email }})
               </span>
-            </div>
-            <div v-else>
-              <span class="grey--text">No tasks evaluated yet.</span>
-            </div>
-          </v-card-text>
-        </v-card>
+              <v-spacer></v-spacer>
+              <v-btn icon color="error" @click="deleteIntern(intern._id)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </v-card-title>
+
+            <v-card-text
+              style="padding-top: 8px; padding-bottom: 12px; border: 2px solid white"
+            >
+              <div class="d-flex flex-wrap">
+                <v-chip color="grey" outlined class="ma-1" small label>
+                  Pending: {{ intern.counts.pending }}
+                </v-chip>
+                <v-chip color="accent" outlined class="ma-1" small label>
+                  Submitted: {{ intern.counts.submitted }}
+                </v-chip>
+                <v-chip color="success" outlined class="ma-1" small label>
+                  Evaluated: {{ intern.counts.evaluated }}
+                </v-chip>
+                <v-chip color="primary" outlined class="ma-1" small label>
+                  Total: {{ intern.counts.total }}
+                </v-chip>
+              </div>
+
+              <v-divider class="my-3"></v-divider>
+
+              <div v-if="intern.starCount">
+                <span style="font-weight: 600">Performance:</span>
+                <v-rating
+                  :value="intern.avgStars"
+                  color="amber"
+                  dense
+                  readonly
+                  size="20"
+                />
+                <span class="grey--text ml-2">
+                  ({{ intern.avgStars.toFixed(2) }} / 5 from {{ intern.starCount }} tasks)
+                </span>
+              </div>
+              <div v-else>
+                <span class="grey--text">No tasks evaluated yet.</span>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-hover>
       </v-col>
     </v-row>
   </v-container>

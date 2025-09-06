@@ -12,7 +12,7 @@
           style="color: #00b8d4; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
           >Intern</span
         ><span
-          style="color: #26a69a; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
+          style="color: accent; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
           >HQ</span
         >
       </span>

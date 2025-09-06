@@ -1,35 +1,41 @@
 <template>
   <v-container>
-    <!-- Loader for initial load only -->
+    <!-- Loader -->
     <Loader v-if="loading && tasks.length === 0" :loading="loading" />
+
+    <!-- Header Card -->
     <v-row align="center" class="mb-4">
       <v-col cols="12">
         <v-card
-          color="primary"
-          dark
-          class="pa-4 d-flex align-center elevation-10 flex-wrap rounded-lg"
-          style="border-radius: 16px; position: relative"
+          class="pa-4 d-flex align-center flex-wrap rounded-xl elevation-8"
+          :style="{
+            background: 'linear-gradient(135deg, #1E88E5 0%, #1F1F1F 100%)',
+            color: '#fff',
+          }"
         >
           <v-icon
             :large="$vuetify.breakpoint.mdAndUp"
             :small="!$vuetify.breakpoint.mdAndUp"
             left
             color="accent"
-            >mdi-account-cog</v-icon
           >
+            mdi-account-cog
+          </v-icon>
+
           <span
+            class="font-weight-bold"
             :style="{
-              fontSize: $vuetify.breakpoint.mdAndUp ? '2rem' : '1.2rem',
-              fontWeight: 600,
-              letterSpacing: '1px',
-              wordBreak: 'break-word',
+              fontSize: $vuetify.breakpoint.mdAndUp ? '1.8rem' : '1.2rem',
+              letterSpacing: '0.5px',
               flex: '1 1 auto',
               minWidth: 0,
             }"
           >
             Admin Portal
           </span>
+
           <v-spacer v-if="$vuetify.breakpoint.mdAndUp"></v-spacer>
+
           <div
             :style="{
               width: $vuetify.breakpoint.mdAndUp ? 'auto' : '100%',
@@ -38,84 +44,89 @@
               justifyContent: $vuetify.breakpoint.mdAndUp ? 'flex-end' : 'center',
             }"
           >
-            <v-chip color="accent" class="font-weight-bold" outlined dark>
+            <v-chip color="accent" class="font-weight-bold" outlined>
               Task Management
             </v-chip>
           </div>
-          <!-- Small loader at the bottom during polling -->
+
+          <!-- Slim Loader -->
           <v-progress-linear
             v-if="loading && tasks.length > 0"
             indeterminate
-            color="black"
-            height="10"
-            style="
-              position: absolute;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              border-radius: 0 0 16px 16px;
-            "
+            color="accent"
+            height="3"
+            style="position: absolute; left: 0; right: 0; bottom: 0"
           />
         </v-card>
       </v-col>
     </v-row>
-    <v-btn color="accent" class="mb-4" dark elevation="6" @click="showTaskForm = true">
+
+    <!-- Create Task Button -->
+    <v-btn
+      color="primary"
+      class="mb-4"
+      dark
+      elevation="4"
+      rounded
+      @click="showTaskForm = true"
+    >
+      <v-icon left>mdi-plus</v-icon>
       Create New Task
     </v-btn>
 
+    <!-- Task Form -->
     <TaskForm
       v-model="showTaskForm"
       @created="refreshTasks"
       @cancel="showTaskForm = false"
     />
 
+    <!-- Empty State -->
     <div v-if="tasks.length === 0 && !loading">
       <v-alert type="info" outlined>No tasks created yet.</v-alert>
     </div>
 
+    <!-- Task List -->
     <v-row>
       <v-col cols="12" md="6" v-for="task in tasks" :key="task._id">
         <v-card
-          class="mb-4 elevation-12 rounded-xl"
+          class="mb-4 rounded-xl elevation-6"
           :style="{
-            borderLeft: '6px solid #00B8D4',
-            background: 'linear-gradient(135deg, #232526 0%, #3F51B5 100%)',
+            background: '#212121',
             color: '#fff',
-            boxShadow: '0 4px 24px 0 rgba(63,81,181,0.15)',
+            borderLeft: '6px solid #00E5FF',
           }"
         >
-          <v-card-title
-            class="headline font-weight-bold d-flex align-center"
-            style="letter-spacing: 1px"
-          >
+          <!-- Task Header -->
+          <v-card-title class="headline font-weight-bold d-flex align-center">
             <v-icon color="accent" left>mdi-clipboard-text</v-icon>
-            <span style="flex: 1">{{ task.title }}</span>
-            <v-btn
-              icon
-              color="error"
-              @click="deleteTask(task._id)"
-              style="margin-left: 8px"
-            >
+            <span class="flex-grow-1">{{ task.title }}</span>
+            <v-btn icon color="error" @click="deleteTask(task._id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-card-title>
+
+          <!-- Task Body -->
           <v-card-text>
             <div class="mb-2"><strong>Description:</strong> {{ task.description }}</div>
             <div class="mb-2">
               <v-icon color="info" small>mdi-calendar</v-icon>
               <strong>Created:</strong> {{ new Date(task.createdAt).toLocaleString() }}
             </div>
+
+            <!-- Assignments -->
             <div class="mb-1"><strong>Assignments:</strong></div>
-            <v-divider class="my-2"></v-divider>
+            <v-divider class="my-2" color="grey darken-2"></v-divider>
+
             <div v-if="task.assignments && task.assignments.length">
               <v-card
                 v-for="assign in task.assignments"
                 :key="assign._id"
-                class="mb-2 pa-2 elevation-2 rounded-lg"
+                class="mb-2 pa-3 rounded-lg elevation-2"
                 :style="{
-                  background: '#232526',
-                  borderLeft: '4px solid #3F51B5',
-                  color: '#fff',
+                  background: '#2A2A2A',
+                  borderLeft: '4px solid #1E88E5',
+                  color: '#E0E0E0',
                 }"
                 outlined
               >
@@ -127,7 +138,7 @@
                 </div>
                 <div>
                   <strong>Status:</strong>
-                  <v-chip :color="statusColor(assign.status)" small dark>
+                  <v-chip :color="statusColor(assign.status)" small outlined>
                     {{ assign.status }}
                   </v-chip>
                 </div>
@@ -136,9 +147,11 @@
                   <a
                     :href="assign.submissionLink"
                     target="_blank"
-                    style="color: #00b8d4"
-                    >{{ assign.submissionLink }}</a
+                    class="text-decoration-none"
+                    style="color: #00e5ff"
                   >
+                    {{ assign.submissionLink }}
+                  </a>
                 </div>
                 <div v-if="assign.feedback">
                   <strong>Feedback:</strong> {{ assign.feedback }}
