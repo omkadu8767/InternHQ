@@ -222,6 +222,18 @@ export default {
     this.pollIntervalId = setInterval(() => {
       this.fetchAssignments();
     }, 5000);
+    // Tawk.to Chatbot integration (only for intern dashboard)
+    if (!window.Tawk_API) {
+      (function () {
+        var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = "https://embed.tawk.to/68bd4b9567c586192c66a3d7/1j4hmugp8";
+        s1.charset = "UTF-8";
+        s1.setAttribute("crossorigin", "*");
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    }
   },
   beforeDestroy() {
     if (this.pollIntervalId) {
