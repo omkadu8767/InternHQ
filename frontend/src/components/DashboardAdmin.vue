@@ -85,6 +85,52 @@
       <v-alert type="info" outlined>No tasks created yet.</v-alert>
     </div>
 
+    <!-- Analytics & Insights -->
+    <v-row class="mb-6" v-if="tasks.length > 0">
+      <v-col cols="12" md="4">
+        <v-card class="pa-4 rounded-xl elevation-2">
+          <div class="font-weight-bold mb-2" style="color: #1e88e5">
+            Task Completion Rate
+          </div>
+          <LineChart
+            v-if="completionChartData.labels && completionChartData.labels.length"
+            :data="completionChartData"
+            :options="chartOptions"
+            :height="180"
+          />
+          <div v-else class="text-center grey--text">No data available</div>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card class="pa-4 rounded-xl elevation-2">
+          <div class="font-weight-bold mb-2" style="color: #1e88e5">
+            Average Scores per Intern
+          </div>
+          <BarChart
+            v-if="scoreChartData.labels && scoreChartData.labels.length"
+            :data="scoreChartData"
+            :options="chartOptions"
+            :height="180"
+          />
+          <div v-else class="text-center grey--text">No data available</div>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="4">
+        <v-card class="pa-4 rounded-xl elevation-2">
+          <div class="font-weight-bold mb-2" style="color: #1e88e5">
+            Most Active Interns
+          </div>
+          <PieChart
+            v-if="activeChartData.labels && activeChartData.labels.length"
+            :data="activeChartData"
+            :options="chartOptions"
+            :height="180"
+          />
+          <div v-else class="text-center grey--text">No data available</div>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!-- Task List -->
     <v-row>
       <v-col cols="12" md="6" v-for="task in tasks" :key="task._id">
@@ -140,6 +186,9 @@
                   <v-chip :color="statusColor(assign.status)" small outlined>
                     {{ assign.status }}
                   </v-chip>
+                  <v-chip v-if="assign.edited" color="orange" small outlined class="ml-2">
+                    Edited
+                  </v-chip>
                 </div>
                 <div v-if="assign.submissionLink">
                   <strong>Submission:</strong>
@@ -177,17 +226,30 @@
 <script>
 import axios from "axios";
 import Loader from "../components/AppLoader.vue";
+import BarChart from "./Charts/BarChart.vue";
+import LineChart from "./Charts/LineChart.vue";
+import PieChart from "./Charts/PieChart.vue";
 import TaskEvaluate from "./TaskEvaluate.vue";
 import TaskForm from "./TaskForm.vue";
 
 export default {
-  components: { Loader, TaskForm, TaskEvaluate },
+  components: { Loader, TaskForm, TaskEvaluate, LineChart, BarChart, PieChart },
   data() {
     return {
       loading: true,
       tasks: [],
       showTaskForm: false,
       pollIntervalId: null,
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+        },
+      },
+      completionChartData: { labels: [], datasets: [] },
+      scoreChartData: { labels: [], datasets: [] },
+      activeChartData: { labels: [], datasets: [] },
     };
   },
   methods: {
@@ -223,6 +285,7 @@ export default {
     },
     refreshTasks() {
       this.fetchTasks();
+      this.fetchAnalytics();
       this.showTaskForm = false;
     },
     statusColor(status) {
@@ -231,12 +294,83 @@ export default {
       if (status === "evaluated") return "green lighten-1";
       return "grey lighten-1";
     },
+    async fetchAnalytics() {
+      try {
+        const res = await axios.get("http://localhost:5000/api/tasks/admin/interns", {
+          headers: { "auth-token": localStorage.getItem("auth-token") },
+        });
+        const interns = res.data.interns || [];
+
+        if (interns.length === 0) {
+          this.completionChartData = { labels: [], datasets: [] };
+          this.scoreChartData = { labels: [], datasets: [] };
+          this.activeChartData = { labels: [], datasets: [] };
+          return;
+        }
+
+        // Task Completion Rate
+        const completed = interns
+          .map((i) => i.counts.evaluated)
+          .reduce((a, b) => a + b, 0);
+        const pending = interns.map((i) => i.counts.pending).reduce((a, b) => a + b, 0);
+        const submitted = interns
+          .map((i) => i.counts.submitted)
+          .reduce((a, b) => a + b, 0);
+
+        this.completionChartData = {
+          labels: ["Completed", "Submitted", "Pending"],
+          datasets: [
+            {
+              label: "Tasks",
+              backgroundColor: ["#66bb6a", "#42a5f5", "#ffa726"],
+              data: [completed, submitted, pending],
+            },
+          ],
+        };
+
+        // Average Scores per Intern (only those with scores)
+        const internsWithScores = interns.filter((i) => i.avgStars && i.avgStars > 0);
+        this.scoreChartData = {
+          labels: internsWithScores.map((i) => i.name),
+          datasets: [
+            {
+              label: "Avg Stars",
+              backgroundColor: "#1e88e5",
+              data: internsWithScores.map((i) => i.avgStars || 0),
+            },
+          ],
+        };
+
+        // Most Active Interns (by total tasks)
+        const activeInterns = interns.filter((i) => i.counts.total > 0);
+        this.activeChartData = {
+          labels: activeInterns.map((i) => i.name),
+          datasets: [
+            {
+              label: "Tasks",
+              backgroundColor: activeInterns.map((_, index) => {
+                const colors = ["#29b6f6", "#66bb6a", "#ffa726", "#ef5350", "#ab47bc"];
+                return colors[index % colors.length];
+              }),
+              data: activeInterns.map((i) => i.counts.total),
+            },
+          ],
+        };
+      } catch (err) {
+        console.error("Analytics fetch error:", err);
+        this.completionChartData = { labels: [], datasets: [] };
+        this.scoreChartData = { labels: [], datasets: [] };
+        this.activeChartData = { labels: [], datasets: [] };
+      }
+    },
   },
   mounted() {
     this.fetchTasks();
+    this.fetchAnalytics();
     this.pollIntervalId = setInterval(() => {
       this.fetchTasks();
-    }, 5000);
+      this.fetchAnalytics();
+    }, 30000); // Reduced from 1000000ms to 30000ms (30 seconds)
   },
   beforeDestroy() {
     if (this.pollIntervalId) {

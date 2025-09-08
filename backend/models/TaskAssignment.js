@@ -37,6 +37,10 @@ const TaskAssignmentSchema = new Schema({
     updatedAt: {
         type: Date,
         default: Date.now
+    },
+    edited: { 
+        type: Boolean, 
+        default: false 
     }
 });
 

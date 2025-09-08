@@ -78,15 +78,34 @@ router.put('/submit/:taskId', fetchuser, async (req, res) => {
             intern: req.user.id
         });
         if (!assignment) return res.status(404).send({ error: "Assignment not found" });
-        assignment.submissionLink = req.body.submissionLink;
-        assignment.status = 'submitted';
-        await assignment.save();
-        res.json({ success: true, assignment });
+
+        // If it's the first submission (pending), allow it
+        if (assignment.status === 'pending') {
+            assignment.submissionLink = req.body.submissionLink;
+            assignment.status = 'submitted';
+            assignment.updatedAt = new Date();
+            await assignment.save();
+            return res.json({ success: true, assignment });
+        }
+
+        // If it's an edit after evaluation, allow it
+        if (assignment.status === 'evaluated') {
+            assignment.submissionLink = req.body.submissionLink;
+            assignment.status = 'submitted'; // Set back to submitted for re-evaluation
+            assignment.edited = true;
+            assignment.updatedAt = new Date();
+            await assignment.save();
+            return res.json({ success: true, assignment });
+        }
+
+        // If already submitted and not evaluated, block edit
+        return res.status(403).send({ error: "You can only edit after evaluation." });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Internal server error');
     }
 });
+
 
 //Route 5: Evaluate Task (Admin) PUT /api/tasks/evaluate/:assignmentId
 router.put('/evaluate/:assignmentId', fetchuser, async (req, res) => {

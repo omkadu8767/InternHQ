@@ -53,6 +53,26 @@
       </v-col>
     </v-row>
 
+    <!-- Edit Submission Dialog -->
+    <v-dialog v-model="editDialog" max-width="500">
+      <v-card>
+        <v-card-title>Edit Submission</v-card-title>
+        <v-card-text>
+          <v-form @submit.prevent="submitEdit">
+            <v-text-field
+              v-model="editSubmissionLink"
+              label="GitHub Link"
+              required
+              color="primary"
+            />
+            <v-btn :loading="editLoading" type="submit" color="primary" small>
+              Save Changes
+            </v-btn>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <!-- Empty State -->
     <v-alert v-if="!loading && allAssignments.length === 0" type="info" outlined>
       No tasks assigned yet.
@@ -106,6 +126,14 @@
               <div class="mb-2">
                 <strong>Status:</strong>
                 <v-chip color="blue lighten-2" small>Submitted</v-chip>
+                <v-chip
+                  v-if="assignment.edited"
+                  color="orange"
+                  small
+                  outlined
+                  class="ml-2"
+                  >Edited</v-chip
+                >
               </div>
               <div class="mb-2">
                 <strong>Submission Link:</strong>
@@ -117,6 +145,7 @@
                   {{ assignment.submissionLink }}
                 </a>
               </div>
+
               <em>Waiting for evaluation from Admin...</em>
             </v-card-text>
           </v-card>
@@ -146,6 +175,14 @@
               <div class="mb-2">
                 <strong>Status:</strong>
                 <v-chip color="green lighten-1" small>Evaluated</v-chip>
+                <v-chip
+                  v-if="assignment.edited"
+                  color="orange"
+                  small
+                  outlined
+                  class="ml-2"
+                  >Edited</v-chip
+                >
               </div>
               <div class="mb-2">
                 <strong>Submission Link:</strong>
@@ -162,6 +199,15 @@
                 <strong>Stars:</strong>
                 <v-rating :value="assignment.stars" color="amber" dense readonly />
               </div>
+              <v-btn
+                small
+                color="primary"
+                outlined
+                class="mt-2"
+                @click="openEditDialog(assignment)"
+              >
+                Edit Submission
+              </v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -182,6 +228,10 @@ export default {
       allAssignments: [],
       loading: true,
       pollIntervalId: null,
+      editDialog: false,
+      editAssignment: null,
+      editSubmissionLink: "",
+      editLoading: false,
     };
   },
   computed: {
@@ -215,6 +265,32 @@ export default {
     },
     refreshAssignments() {
       this.fetchAssignments();
+    },
+    openEditDialog(assignment) {
+      this.editAssignment = assignment;
+      this.editSubmissionLink = assignment.submissionLink;
+      this.editDialog = true;
+    },
+    async submitEdit() {
+      this.editLoading = true;
+      try {
+        await axios.put(
+          `http://localhost:5000/api/tasks/submit/${this.editAssignment.task._id}`,
+          {
+            submissionLink: this.editSubmissionLink,
+            edited: true,
+          },
+          {
+            headers: { "auth-token": localStorage.getItem("auth-token") },
+          }
+        );
+        this.$toast.success("Submission updated!");
+        this.editDialog = false;
+        this.refreshAssignments();
+      } catch (error) {
+        this.$toast.error("Failed to update submission.");
+      }
+      this.editLoading = false;
     },
   },
   mounted() {
