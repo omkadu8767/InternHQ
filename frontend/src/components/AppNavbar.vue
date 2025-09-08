@@ -8,51 +8,86 @@
         style="margin-right: 8px; vertical-align: middle"
       />
       <span
-        style="font-size: 1.7rem; font-weight: 700; letter-spacing: 1px; color: #1e88e5"
+        style="font-size: 1.7rem; font-weight: 700; letter-spacing: 1px; color: white"
       >
         <span
           style="color: #00b8d4; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
           >Intern</span
         ><span
-          style="color: black; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
+          style="color: white; font-weight: 900; font-size: 2rem; letter-spacing: 2px"
           >HQ</span
         >
       </span>
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <template v-if="$vuetify.breakpoint.mdAndUp">
-      <v-btn v-if="isAuthenticated && !isAdmin" to="/intern" text class="mx-2"
+      <v-btn
+        v-if="isAuthenticated && !isAdmin"
+        to="/intern"
+        text
+        class="mx-2"
+        color="white"
         >Home</v-btn
       >
-      <v-btn v-if="isAuthenticated && isAdmin" to="/admin" text class="mx-2">Home</v-btn>
-      <v-btn v-if="isAuthenticated && !isAdmin" to="/profile" text class="mx-2"
+      <v-btn v-if="isAuthenticated && isAdmin" to="/admin" text class="mx-2" color="white"
+        >Home</v-btn
+      >
+      <v-btn
+        v-if="isAuthenticated && !isAdmin"
+        to="/profile"
+        text
+        class="mx-2"
+        color="white"
         >Profile</v-btn
       >
-      <v-btn v-if="isAuthenticated && !isAdmin" to="/leaderboard" text class="mx-2"
+      <v-btn
+        v-if="isAuthenticated && !isAdmin"
+        to="/leaderboard"
+        text
+        class="mx-2"
+        color="white"
         >Leaderboard</v-btn
       >
-      <v-btn v-if="isAuthenticated && isAdmin" to="/admin-list" text class="mx-2"
+      <v-btn
+        v-if="isAuthenticated && isAdmin"
+        to="/admin-list"
+        text
+        class="mx-2"
+        color="white"
         >List</v-btn
       >
-      <v-btn v-if="!isAuthenticated" to="/login" text class="mx-2" color="primary"
+      <v-btn
+        v-if="!isAuthenticated"
+        to="/login"
+        outlined
+        class="mx-2"
+        color="white"
+        style="border: 2px solid white; font-weight: 600"
         >Login</v-btn
       >
-      <v-btn v-if="!isAuthenticated" to="/signup" text class="mx-2" color="primary"
+      <v-btn
+        v-if="!isAuthenticated"
+        to="/signup"
+        outlined
+        class="mx-2"
+        color="white"
+        style="border: 2px solid white; font-weight: 600"
         >Signup</v-btn
       >
       <v-btn
         v-if="isAuthenticated"
         @click="logout"
-        text
+        outlined
         class="mx-2"
-        style="color: red; font-weight: 900"
+        color="white"
+        style="border: 2px solid #ffcdd2; color: #ffcdd2; font-weight: 600"
         >Logout</v-btn
       >
     </template>
     <template v-else>
       <v-menu offset-y left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
+          <v-btn icon v-bind="attrs" v-on="on" color="white">
             <v-icon>mdi-menu</v-icon>
           </v-btn>
         </template>
