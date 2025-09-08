@@ -154,6 +154,17 @@
           <!-- Task Body -->
           <v-card-text>
             <div class="mb-2"><strong>Description:</strong> {{ task.description }}</div>
+
+            <!-- Add Admin Name -->
+            <div class="mb-2">
+              <v-icon color="success" small>mdi-account-tie</v-icon>
+              <strong>Assigned by:</strong>
+              {{ task.postedBy ? task.postedBy.name : "Unknown Admin" }}
+              <span v-if="task.postedBy && task.postedBy.email"
+                >({{ task.postedBy.email }})</span
+              >
+            </div>
+
             <div class="mb-2">
               <v-icon color="info" small>mdi-calendar</v-icon>
               <strong>Created:</strong> {{ new Date(task.createdAt).toLocaleString() }}
@@ -370,7 +381,7 @@ export default {
     this.pollIntervalId = setInterval(() => {
       this.fetchTasks();
       this.fetchAnalytics();
-    }, 30000); // Reduced from 1000000ms to 30000ms (30 seconds)
+    }, 30000); //30000ms (30 seconds)
   },
   beforeDestroy() {
     if (this.pollIntervalId) {

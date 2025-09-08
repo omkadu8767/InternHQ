@@ -39,7 +39,9 @@ router.get('/admin', fetchuser, async (req, res) => {
             return res.status(403).json({ error: "Access denied" });
         }
 
-        const tasks = await Task.find({ postedBy: req.user.id }).lean();
+        const tasks = await Task.find({ postedBy: req.user.id })
+            .populate('postedBy', 'name email') // Add this line to populate admin details
+            .lean();
 
         const tasksWithAssignments = await Promise.all(
             tasks.map(async task => {
@@ -58,15 +60,27 @@ router.get('/admin', fetchuser, async (req, res) => {
 });
 
 //Route 3: Get All Assigned Tasks (Intern) GET /api/tasks/assigned (Intern sees only tasks assigned to them.)
+// Route 3: Get assigned tasks for the logged-in intern
 router.get('/assigned', fetchuser, async (req, res) => {
-    if (req.user.isAdmin) return res.status(403).send({ error: "Admins cannot view this" });
     try {
+        if (req.user.isAdmin) {
+            return res.status(403).json({ error: "Access denied" });
+        }
+
         const assignments = await TaskAssignment.find({ intern: req.user.id })
-            .populate('task');
-        res.json({ success: true, assignments });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Internal server error');
+            .populate({
+                path: 'task',
+                populate: {
+                    path: 'postedBy',
+                    select: 'name email'
+                }
+            })
+            .lean();
+
+        res.json({ assignments });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
     }
 });
 
@@ -201,6 +215,7 @@ router.delete('/:taskId', fetchuser, async (req, res) => {
     }
 });
 
+//Route 10: show leaderboard on /leaderboard
 router.get('/leaderboard', async (req, res) => {
     try {
         // Only include evaluated assignments

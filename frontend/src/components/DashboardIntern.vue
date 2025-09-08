@@ -97,6 +97,21 @@
               <div class="mb-2">
                 <strong>Description:</strong> {{ assignment.task.description }}
               </div>
+
+              <!-- Add Admin Name -->
+              <div class="mb-2">
+                <v-icon color="success" small>mdi-account-tie</v-icon>
+                <strong>Assigned by:</strong>
+                {{
+                  assignment.task.postedBy
+                    ? assignment.task.postedBy.name
+                    : "Unknown Admin"
+                }}
+                <span v-if="assignment.task.postedBy && assignment.task.postedBy.email">
+                  ({{ assignment.task.postedBy.email }})
+                </span>
+              </div>
+
               <TaskSubmit :assignment="assignment" @submitted="refreshAssignments" />
             </v-card-text>
           </v-card>
@@ -123,6 +138,21 @@
               <div class="mb-2">
                 <strong>Description:</strong> {{ assignment.task.description }}
               </div>
+
+              <!-- Add Admin Name -->
+              <div class="mb-2">
+                <v-icon color="success" small>mdi-account-tie</v-icon>
+                <strong>Assigned by:</strong>
+                {{
+                  assignment.task.postedBy
+                    ? assignment.task.postedBy.name
+                    : "Unknown Admin"
+                }}
+                <span v-if="assignment.task.postedBy && assignment.task.postedBy.email">
+                  ({{ assignment.task.postedBy.email }})
+                </span>
+              </div>
+
               <div class="mb-2">
                 <strong>Status:</strong>
                 <v-chip color="blue lighten-2" small>Submitted</v-chip>
@@ -172,6 +202,21 @@
               <div class="mb-2">
                 <strong>Description:</strong> {{ assignment.task.description }}
               </div>
+
+              <!-- Add Admin Name -->
+              <div class="mb-2">
+                <v-icon color="success" small>mdi-account-tie</v-icon>
+                <strong>Assigned by:</strong>
+                {{
+                  assignment.task.postedBy
+                    ? assignment.task.postedBy.name
+                    : "Unknown Admin"
+                }}
+                <span v-if="assignment.task.postedBy && assignment.task.postedBy.email">
+                  ({{ assignment.task.postedBy.email }})
+                </span>
+              </div>
+
               <div class="mb-2">
                 <strong>Status:</strong>
                 <v-chip color="green lighten-1" small>Evaluated</v-chip>
