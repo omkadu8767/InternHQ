@@ -11,7 +11,6 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 const routes = [
-    { path: '/', component: Login },
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
     {
@@ -38,6 +37,22 @@ const routes = [
         path: '/leaderboard',
         component: LeaderboardIntern,
         meta: { requiresAuth: true, isAdmin: false }
+    },
+    // Root path - redirect based on auth status
+    {
+        path: '/',
+        redirect: () => {
+            const token = localStorage.getItem('auth-token');
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
+            if (!token) {
+                return '/login';
+            } else if (isAdmin) {
+                return '/admin';        // Admin goes to /admin
+            } else {
+                return '/intern';       // Intern goes to /intern
+            }
+        }
     }
 ];
 
@@ -47,16 +62,31 @@ const router = new VueRouter({ mode: 'history', routes });
 router.beforeEach((to, from, next) => {
     const token = localStorage.getItem('auth-token');
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!token) {
             next('/login');
         } else if (to.meta.isAdmin !== undefined && to.meta.isAdmin !== isAdmin) {
-            next('/login'); // redirect to home if role not matching
+            // Redirect to appropriate dashboard instead of login
+            if (isAdmin) {
+                next('/admin');
+            } else {
+                next('/intern');
+            }
         } else {
             next();
         }
     } else {
-        next();
+        // If user is already authenticated and tries to access login/signup
+        if ((to.path === '/login' || to.path === '/signup') && token) {
+            if (isAdmin) {
+                next('/admin');
+            } else {
+                next('/intern');
+            }
+        } else {
+            next();
+        }
     }
 });
 
