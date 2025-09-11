@@ -3,7 +3,7 @@
 <template>
   <v-app>
     <!-- Global Navigation Bar -->
-    <Navbar/>
+    <Navbar />
 
     <!-- Loader Overlay (on route change or global loading) -->
     <Loader :loading="globalLoading" />
@@ -16,22 +16,20 @@
 </template>
 
 <script>
-import Loader from './components/AppLoader.vue';
-import Navbar from './components/AppNavbar.vue';
+import Loader from "./components/AppLoader.vue";
+import Navbar from "./components/AppNavbar.vue";
 
 export default {
   components: {
     Navbar,
-    Loader
+    Loader,
   },
   data() {
     return {
-      globalLoading: false // For global loaders as needed
-    }
+      globalLoading: false, //if route changes, loader appears
+    };
   },
   created() {
-    // Optional: Listen to loading state using events or a global store
-    // Or use vue-router hooks for page transitions
     this.$router.beforeEach((to, from, next) => {
       this.globalLoading = true;
       next();
@@ -39,8 +37,8 @@ export default {
     this.$router.afterEach(() => {
       this.globalLoading = false;
     });
-  }
-}
+  },
+};
 </script>
 
 <style>

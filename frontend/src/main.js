@@ -35,10 +35,8 @@ Vue.mixin({
   }
 });
 Vue.use(Toast, {
-  // Optional: Global options for all toasts
   timeout: 3000,
   position: 'top-right',
-  // ... other options
 });
 
 

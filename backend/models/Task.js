@@ -27,7 +27,7 @@ const TaskSchema = new Schema({
         default: Date.now
     }
     // NOT including assignedTo, status, submissionLink, feedback, or stars here.
-    // These are now handled in the TaskAssignment schema per intern per task.
+    // These will be handled in the TaskAssignment schema per intern per task.
 });
 
 const Task = mongoose.model('Task', TaskSchema);
