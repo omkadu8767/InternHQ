@@ -1,0 +1,9 @@
+# Static Site Configuration for SPA Routing
+
+# Redirect all routes to index.html for Vue.js client-side routing
+# This ensures that direct URL access and page refreshes work correctly
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -22,6 +22,7 @@ module.exports = defineConfig({
   },
   devServer: {
     port: 8080,
+    historyApiFallback: true, // Enable history API fallback for SPA routing
     proxy: {
       '/api': {
         target: process.env.VUE_APP_API_URL || 'http://localhost:5000',
