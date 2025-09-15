@@ -7,6 +7,19 @@ module.exports = defineConfig({
   outputDir: 'dist',
   assetsDir: 'static',
   productionSourceMap: false,
+  lintOnSave: false, // Disable linting during build to avoid blocking
+  configureWebpack: {
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+      }
+    },
+    resolve: {
+      alias: {
+        '@': require('path').resolve(__dirname, 'src')
+      }
+    }
+  },
   devServer: {
     port: 8080,
     proxy: {

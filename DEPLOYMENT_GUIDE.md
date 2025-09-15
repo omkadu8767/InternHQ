@@ -148,7 +148,7 @@ Trigger a manual deploy in Render dashboard for the backend service.
 
 ## 🎉 Deployment Complete!
 
-Your Vue.js application is now live with:
+My Vue.js application is now live with:
 - ✅ Scalable backend API on Render
 - ✅ Static frontend hosting on Render
 - ✅ Cloud database with MongoDB Atlas
