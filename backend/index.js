@@ -6,38 +6,37 @@ require('dotenv').config();
 const connectToMongo = require("./db");
 connectToMongo();
 
-// CORS configuration for production
-const corsOptions = {
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+// Simple CORS setup that works reliably
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, auth-token');
+    res.header('Access-Control-Allow-Credentials', 'true');
 
-        const allowedOrigins = [
-            'http://localhost:8080', // Local development
-            'http://localhost:3000', // Alternative local port
-            'https://internhq-frontend.onrender.com', // Production frontend
-            process.env.FRONTEND_URL?.replace(/\/$/, '') // Remove trailing slash
-        ].filter(Boolean);
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
 
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log('CORS blocked origin:', origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+// Also use the cors middleware as backup
+app.use(cors({
+    origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
-    optionsSuccessStatus: 200
-};
+    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token', 'X-Requested-With']
+}));
 
-app.use(cors(corsOptions));
-app.use(express.json()); // Parse JSON bodies
+app.use(express.json());
 
-// Debug middleware to log requests
+// Debug middleware
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.get('origin')}`);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, auth-token');
     next();
 });
 
@@ -45,13 +44,25 @@ const PORT = process.env.PORT || 5000;
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/tasks', require('./routes/task'));
 
-
 app.get("/", (req, res) => {
-    res.send("Hello world I am root");
-
+    res.json({
+        message: "Hello world I am root",
+        timestamp: new Date().toISOString(),
+        origin: req.get('origin'),
+        cors: "enabled - all origins allowed"
+    });
 });
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+    res.json({
+        status: "OK",
+        timestamp: new Date().toISOString(),
+        cors: "enabled"
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    console.log(`CORS enabled for all origins (development mode)`);
 });
