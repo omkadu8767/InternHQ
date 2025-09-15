@@ -8,17 +8,38 @@ connectToMongo();
 
 // CORS configuration for production
 const corsOptions = {
-    origin: [
-        'http://localhost:8080', // Local development
-        'http://localhost:3000', // Alternative local port
-        process.env.FRONTEND_URL || '*' // Production frontend URL
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            'http://localhost:8080', // Local development
+            'http://localhost:3000', // Alternative local port
+            'https://internhq-frontend.onrender.com', // Production frontend
+            process.env.FRONTEND_URL?.replace(/\/$/, '') // Remove trailing slash
+        ].filter(Boolean);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'auth-token'],
     optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 app.use(express.json()); // Parse JSON bodies
+
+// Debug middleware to log requests
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.get('origin')}`);
+    next();
+});
 
 const PORT = process.env.PORT || 5000;
 app.use('/api/auth', require('./routes/auth'));
