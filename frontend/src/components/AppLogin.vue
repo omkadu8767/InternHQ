@@ -51,6 +51,7 @@
 
 <script>
 import axios from "axios";
+import ApiService from "@/services/api";
 export default {
   data() {
     return { email: "", password: "", loading: false };
@@ -59,7 +60,7 @@ export default {
     async login() {
       this.loading = true;
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/login", {
+        const res = await axios.post(ApiService.getApiUrl("/auth/login"), {
           email: this.email,
           password: this.password,
         });

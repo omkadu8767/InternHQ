@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import ApiService from "@/services/api";
 import axios from "axios";
 
 export default {
@@ -27,7 +28,7 @@ export default {
       this.loading = true;
       try {
         await axios.put(
-          `http://localhost:5000/api/tasks/submit/${this.assignment.task._id}`,
+          ApiService.getApiUrl(`/tasks/submit/${this.assignment.task._id}`),
           {
             submissionLink: this.submissionLink,
           },

@@ -243,6 +243,7 @@ import PieChart from "./Charts/PieChart.vue";
 import TaskEvaluate from "./TaskEvaluate.vue";
 import TaskForm from "./TaskForm.vue";
 
+import ApiService from "@/services/api";
 export default {
   components: { Loader, TaskForm, TaskEvaluate, LineChart, BarChart, PieChart },
   data() {
@@ -268,7 +269,7 @@ export default {
       if (this.tasks.length === 0) this.loading = true;
       else this.loading = false;
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/admin", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/admin"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.tasks = res.data.tasks || [];
@@ -280,7 +281,7 @@ export default {
     async deleteTask(taskId) {
       if (!confirm("Are you sure you want to delete this task?")) return;
       try {
-        await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+        await axios.delete(`ApiService.getApiUrl("/tasks")/${taskId}`, {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.tasks = this.tasks.filter((t) => t._id !== taskId);
@@ -307,7 +308,7 @@ export default {
     },
     async fetchAnalytics() {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/admin/interns", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/admin/interns"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         const interns = res.data.interns || [];

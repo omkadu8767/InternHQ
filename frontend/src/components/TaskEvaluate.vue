@@ -31,7 +31,7 @@ export default {
       this.loading = true;
       try {
         await axios.put(
-          `http://localhost:5000/api/tasks/evaluate/${this.assignment._id}`,
+          `ApiService.getApiUrl("/tasks/evaluate/")${this.assignment._id}`,
           { feedback: this.feedback, stars: this.stars },
           { headers: { "auth-token": localStorage.getItem("auth-token") } }
         );

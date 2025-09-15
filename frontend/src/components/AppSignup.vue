@@ -60,6 +60,7 @@
 
 <script>
 import axios from "axios";
+import ApiService from "@/services/api";
 export default {
   data() {
     return { name: "", email: "", password: "", loading: false };
@@ -68,7 +69,7 @@ export default {
     async signup() {
       this.loading = true;
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/createuser", {
+        const res = await axios.post(ApiService.getApiUrl("/auth/createuser"), {
           name: this.name,
           email: this.email,
           password: this.password,

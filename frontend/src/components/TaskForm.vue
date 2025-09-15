@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import ApiService from "@/services/api";
 import axios from "axios";
 
 export default {
@@ -92,7 +93,7 @@ export default {
       this.loading = true;
       try {
         await axios.post(
-          "http://localhost:5000/api/tasks",
+          ApiService.getApiUrl("/tasks"),
           { title: this.title, description: this.description },
           { headers: { "auth-token": localStorage.getItem("auth-token") } }
         );

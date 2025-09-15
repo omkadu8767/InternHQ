@@ -266,6 +266,7 @@ import axios from "axios";
 import Loader from "../components/AppLoader.vue";
 import TaskSubmit from "./TaskSubmit.vue";
 
+import ApiService from "@/services/api";
 export default {
   components: { Loader, TaskSubmit },
   data() {
@@ -299,7 +300,7 @@ export default {
       if (this.allAssignments.length === 0) this.loading = true;
       else this.loading = false;
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/assigned", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/assigned"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.allAssignments = res.data.assignments || [];
@@ -320,7 +321,7 @@ export default {
       this.editLoading = true;
       try {
         await axios.put(
-          `http://localhost:5000/api/tasks/submit/${this.editAssignment.task._id}`,
+          `ApiService.getApiUrl("/tasks/submit/")${this.editAssignment.task._id}`,
           {
             submissionLink: this.editSubmissionLink,
             edited: true,

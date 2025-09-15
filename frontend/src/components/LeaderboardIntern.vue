@@ -97,6 +97,7 @@
 
 <script>
 import axios from "axios";
+import ApiService from "@/services/api";
 export default {
   data() {
     return {
@@ -106,7 +107,7 @@ export default {
   methods: {
     async fetchLeaderboard() {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/leaderboard");
+        const res = await axios.get(ApiService.getApiUrl("/tasks/leaderboard"));
         this.leaderboard = res.data.leaderboard || [];
       } catch (err) {
         this.leaderboard = [];

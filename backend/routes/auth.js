@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchuser');
-const JWT_SECRET = 'okisalwaysok';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Route 1: Register a new user (admin/mentor or intern)
 router.post('/createuser', [

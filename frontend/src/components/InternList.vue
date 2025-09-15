@@ -93,6 +93,7 @@
 <script>
 import axios from "axios";
 
+import ApiService from "@/services/api";
 export default {
   data() {
     return {
@@ -105,7 +106,7 @@ export default {
     async fetchInterns() {
       this.loading = true;
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/admin/interns", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/admin/interns"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.interns = res.data.interns || [];
@@ -116,7 +117,7 @@ export default {
     },
     async fetchPerformance() {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/admin/interns", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/admin/interns"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.performance = res.data;
@@ -127,7 +128,7 @@ export default {
     async deleteIntern(internId) {
       if (!confirm("Are you sure you want to delete this intern?")) return;
       try {
-        await axios.delete(`http://localhost:5000/api/auth/admin/interns/${internId}`, {
+        await axios.delete(`${ApiService.getApiUrl("/auth/admin/interns")}/${internId}`, {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.interns = this.interns.filter((i) => i._id !== internId);

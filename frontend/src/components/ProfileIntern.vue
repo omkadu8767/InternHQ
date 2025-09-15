@@ -65,6 +65,7 @@
 <script>
 import axios from "axios";
 
+import ApiService from "@/services/api";
 export default {
   data() {
     return {
@@ -76,7 +77,7 @@ export default {
   methods: {
     async fetchUser() {
       try {
-        const res = await axios.get("http://localhost:5000/api/auth/getuser", {
+        const res = await axios.get(ApiService.getApiUrl("/auth/getuser"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.user = res.data;
@@ -86,7 +87,7 @@ export default {
     },
     async fetchTaskCounts() {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/assigned", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/assigned"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         const assignments = res.data.assignments || [];
@@ -108,7 +109,7 @@ export default {
     },
     async fetchPerformance() {
       try {
-        const res = await axios.get("http://localhost:5000/api/tasks/performance", {
+        const res = await axios.get(ApiService.getApiUrl("/tasks/performance"), {
           headers: { "auth-token": localStorage.getItem("auth-token") },
         });
         this.performance = res.data;
