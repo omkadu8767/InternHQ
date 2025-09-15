@@ -1,6 +1,10 @@
 <template>
   <v-app-bar app color="primary" elevate-on-scroll>
-    <v-toolbar-title class="d-flex align-center" style="gap: 10px">
+    <v-toolbar-title
+      class="d-flex align-center"
+      style="gap: 10px; cursor: pointer"
+      @click="navigateTo('/')"
+    >
       <img
         src="../assets/logo2.png"
         alt="InternHQ Logo"
