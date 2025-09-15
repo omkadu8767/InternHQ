@@ -1,5 +1,7 @@
 <template>
-  <v-container>
+  <div>
+    <AppLoader :loading="loading" />
+    <v-container>
     <v-row align="center" class="mb-6">
       <v-col cols="12">
         <v-card color="white" class="pa-4 d-flex align-center elevation-2 rounded-xl">
@@ -93,14 +95,20 @@
       </v-col>
     </v-row>
   </v-container>
+  </div>
 </template>
 
 <script>
+import AppLoader from "@/components/AppLoader.vue";
 import ApiService from "@/services/api";
 import axios from "axios";
 export default {
+  components: {
+    AppLoader,
+  },
   data() {
     return {
+      loading: false,
       leaderboard: [],
     };
   },
@@ -111,10 +119,13 @@ export default {
         this.leaderboard = res.data.leaderboard || [];
       } catch (err) {
         this.leaderboard = [];
+      } finally {
+        this.loading = false;
       }
     },
   },
   mounted() {
+    this.loading = true;
     this.fetchLeaderboard();
   },
 };

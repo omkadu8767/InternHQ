@@ -1,74 +1,81 @@
 <template>
-  <v-container>
-    <v-row align="center" justify="center">
-      <v-col cols="12" md="6">
-        <v-card class="pa-4 elevation-2 rounded-xl" color="white">
-          <!-- User Info -->
-          <v-row align="center">
-            <v-col cols="4" class="text-center">
-              <v-avatar size="80" class="elevation-1">
-                <v-icon large color="primary">mdi-account-circle</v-icon>
-              </v-avatar>
-            </v-col>
-            <v-col cols="8">
-              <div class="text-h6 font-weight-bold" style="color: #1e88e5">
-                {{ user.name }}
-              </div>
-              <div class="text-body-2 grey--text">{{ user.email }}</div>
-            </v-col>
-          </v-row>
+  <div>
+    <AppLoader :loading="loading" />
+    <v-container>
+      <v-row align="center" justify="center">
+        <v-col cols="12" md="6">
+          <v-card class="pa-4 elevation-2 rounded-xl" color="white">
+            <!-- User Info -->
+            <v-row align="center">
+              <v-col cols="4" class="text-center">
+                <v-avatar size="80" class="elevation-1">
+                  <v-icon large color="primary">mdi-account-circle</v-icon>
+                </v-avatar>
+              </v-col>
+              <v-col cols="8">
+                <div class="text-h6 font-weight-bold" style="color: #1e88e5">
+                  {{ user.name }}
+                </div>
+                <div class="text-body-2 grey--text">{{ user.email }}</div>
+              </v-col>
+            </v-row>
 
-          <v-divider class="my-4"></v-divider>
+            <v-divider class="my-4"></v-divider>
 
-          <!-- Task Chips -->
-          <div class="d-flex flex-wrap">
-            <v-chip color="grey lighten-1" class="ma-1" small outlined>
-              Pending: {{ taskCounts.pending }}
-            </v-chip>
-            <v-chip color="primary" class="ma-1" small outlined>
-              Submitted: {{ taskCounts.submitted }}
-            </v-chip>
-            <v-chip color="success" class="ma-1" small outlined>
-              Evaluated: {{ taskCounts.evaluated }}
-            </v-chip>
-            <v-chip color="info" class="ma-1" small outlined>
-              Total: {{ taskCounts.total }}
-            </v-chip>
-          </div>
+            <!-- Task Chips -->
+            <div class="d-flex flex-wrap">
+              <v-chip color="grey lighten-1" class="ma-1" small outlined>
+                Pending: {{ taskCounts.pending }}
+              </v-chip>
+              <v-chip color="primary" class="ma-1" small outlined>
+                Submitted: {{ taskCounts.submitted }}
+              </v-chip>
+              <v-chip color="success" class="ma-1" small outlined>
+                Evaluated: {{ taskCounts.evaluated }}
+              </v-chip>
+              <v-chip color="info" class="ma-1" small outlined>
+                Total: {{ taskCounts.total }}
+              </v-chip>
+            </div>
 
-          <v-divider class="my-4"></v-divider>
+            <v-divider class="my-4"></v-divider>
 
-          <!-- Performance -->
-          <div v-if="performance.count">
-            <span class="font-weight-medium">Performance:</span>
-            <v-rating
-              :value="performance.avgStars"
-              color="amber"
-              background-color="grey lighten-2"
-              dense
-              readonly
-            />
-            <span class="text-body-2 grey--text ml-2">
-              ({{ performance.avgStars.toFixed(2) }} / 5 from
-              {{ performance.count }} tasks)
-            </span>
-          </div>
-          <div v-else>
-            <span class="grey--text">No tasks evaluated yet.</span>
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+            <!-- Performance -->
+            <div v-if="performance.count">
+              <span class="font-weight-medium">Performance:</span>
+              <v-rating
+                :value="performance.avgStars"
+                color="amber"
+                background-color="grey lighten-2"
+                dense
+                readonly
+              />
+              <span class="text-body-2 grey--text ml-2">
+                ({{ performance.avgStars.toFixed(2) }} / 5 from
+                {{ performance.count }} tasks)
+              </span>
+            </div>
+            <div v-else>
+              <span class="grey--text">No tasks evaluated yet.</span>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import axios from "axios";
-
+import AppLoader from "@/components/AppLoader.vue";
 import ApiService from "@/services/api";
+import axios from "axios";
 export default {
+  components: {
+    AppLoader,
+  },
   data() {
     return {
+      loading: false,
       user: { name: "", email: "" },
       taskCounts: { pending: 0, submitted: 0, evaluated: 0, total: 0 },
       performance: { avgStars: null, count: 0 },
@@ -119,9 +126,14 @@ export default {
     },
   },
   mounted() {
-    this.fetchUser();
-    this.fetchTaskCounts();
-    this.fetchPerformance();
+    this.loading = true;
+    Promise.all([
+      this.fetchUser(),
+      this.fetchTaskCounts(),
+      this.fetchPerformance(),
+    ]).finally(() => {
+      this.loading = false;
+    });
   },
 };
 </script>
